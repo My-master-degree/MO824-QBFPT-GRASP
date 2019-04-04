@@ -42,7 +42,9 @@ public abstract class ReactiveGRASP<E> {
 	 */
 	protected Double[] alphas;
 	
-	protected List<Double> alphasRepeated;
+	protected List<Double>[] alphasAverageCost;
+	
+	protected Double[] alphasProbabilities;	
 
 	/**
 	 * the best solution cost
@@ -135,14 +137,30 @@ public abstract class ReactiveGRASP<E> {
 	public ReactiveGRASP(Evaluator<E> objFunction, Double[] alphas, Integer iterations) {
 		this.ObjFunction = objFunction;
 		this.alphas = alphas;
+		this.alphasAverageCost = new ArrayList [alphas.length];
+		for (int i = 0; i < this.alphasAverageCost.length; i++) {
+			this.alphasAverageCost[i] = new ArrayList<Double> ();
+		}
+		this.alphasProbabilities = new Double[alphas.length];
 		this.iterations = iterations;		
 //		this.alphasRepeated = 
 	}
 	
-	protected void updateAlphasRepeated(Double[] probabilities) {
-		for (int i = 0; i < probabilities.length; i++) {
-			String probability_string = new String(probabilities[i].toString();
+	protected void updateAlphaAverageCost(int i, double newCost) {
+		this.alphasAverageCost[i].add(newCost);
+	}
+	
+	protected Double getAlphaAverageCost(i) {
+		Double totalCost = 0;
+		
+	}
+	
+	protected void updateAlphaProbability(int i) {
+		Double qs = 0d;
+		for (int j = 0; j < this.alphas.length; j++) {
+			qs += this.alphasAverageCost[i]
 		}
+		this.alphasProbabilities[i] = (this.incumbentCost/this.alphasAverageCost[i])/
 	}
 	
 	/**

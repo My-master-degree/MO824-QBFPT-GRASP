@@ -72,28 +72,28 @@ public class QBFPT implements Evaluator<Integer> {
 	}
 
 	int l(int u, int pi1, int pi2, int size){
-		return 1 + (((pi1*u) + pi2)%size);
+		return 1 + (((pi1*u) + pi2)%(size-1));
 	}
 	
 	int g(int u, int pi1, int pi2, int size){
-		int lu = l(u, pi1, pi2, size);
+		int lu = l(u, pi1, pi2, (size-1));
 		if (lu != u) {
 			return lu; 
 		}
-		return 1 + (lu%size);
+		return 1 + (lu%(size-1));
 	}
 	
 	int h(int u, int pi1, int pi2, int size){
-		int lu = l(u, pi1, pi2, size),
-			gu = g(u, pi1, pi2, size);
+		int lu = l(u, pi1, pi2, (size-1)),
+			gu = g(u, pi1, pi2, (size-1));
 		if (lu != u && lu != gu) {
 			return lu;
 		}
-		int temp = (1 + (lu%size));
+		int temp = (1 + (lu%(size-1)));
 		if (temp != u && temp != gu) {
 			return temp;
 		}
-		return 1 + ((lu + 1)%size);
+		return 1 + ((lu + 1)%(size-1));
 	}
 	
 	/**
