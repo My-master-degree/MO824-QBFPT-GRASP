@@ -74,8 +74,8 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 
 		return _RCL;
 
-	}
-
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -151,7 +151,7 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 
 		Double minDeltaCost;
 		Integer bestCandIn = null, bestCandOut = null;
-
+//		best improvement
 		do {
 			minDeltaCost = Double.POSITIVE_INFINITY;
 			updateCL();
@@ -198,7 +198,66 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 				ObjFunction.evaluate(incumbentSol);
 			}
 		} while (minDeltaCost < -Double.MIN_VALUE);
-
+//		first improvement
+		// Evaluate insertions
+		do {
+			updateCL();
+			boolean used = false;
+			for (Integer candIn : CL) {
+				double deltaCost = ObjFunction.evaluateInsertionCost(candIn, incumbentSol);
+				if (deltaCost < incumbentSol.cost) {
+					incumbentSol.add(candIn);
+					CL.remove(candIn);
+					ObjFunction.evaluate(incumbentSol);
+					used = true;
+					break;
+				}
+			}		
+			if (!used)
+				break;
+		} while (true);
+		// Evaluate removals
+		do {
+			updateCL();
+			boolean used = false;			
+			for (Integer candOut : incumbentSol) {
+				double deltaCost = ObjFunction.evaluateRemovalCost(candOut, incumbentSol);
+				if (deltaCost < incumbentSol.cost) {
+					incumbentSol.remove(candOut);
+					CL.add(candOut);
+					ObjFunction.evaluate(incumbentSol);
+					used = true;
+				}
+			}
+			if (!used)
+				break;
+		} while (true);
+		// Evaluate exchanges
+		do {
+			updateCL();
+			boolean used = false;
+			for (Integer candIn : CL) {
+				boolean used1 = false;
+				for (Integer candOut : incumbentSol) {
+					double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, incumbentSol);
+					if (deltaCost < minDeltaCost) {
+						incumbentSol.remove(candOut);
+						CL.add(candOut);
+						incumbentSol.add(candIn);
+						CL.remove(candIn);
+						ObjFunction.evaluate(incumbentSol);
+						used = true;
+						used1 = true;
+						break;
+					}
+				}
+				if (!used1)
+					break;			
+			}
+			if (!used)
+				break;			
+		} while (true);
+		
 		return null;
 	}
 
