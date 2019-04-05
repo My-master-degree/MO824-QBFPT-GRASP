@@ -181,18 +181,21 @@ public abstract class ReactiveGRASP<E> {
 		this.readyToBalanceAlphasProbabilities = ready;
 //		get value
 		if (this.readyToBalanceAlphasProbabilities) {
-			System.out.println("now balance!!!!");
+//			System.out.println("now balance!!!!");
 			double[] qs = new double[alphas.length];
 			double dSum = 0;
 //			calculate q	
-			if (this.incumbentCost == 0)
-				return;
+//			System.out.println("Quoeficients values");
 			for (int i = 0; i < alphas.length; i++) {
-				qs[i] = this.incumbentCost/(this.alphasSolutionsCostsSum[i]/this.alphasSolutionsNumber[i]);
+				if (this.incumbentCost == 0) {
+					qs[i] = (1 + Math.abs(this.incumbentCost))/(1 + Math.abs(this.alphasSolutionsCostsSum[i]/this.alphasSolutionsNumber[i]));
+				}else {
+					qs[i] = Math.abs(this.incumbentCost)/Math.abs(this.alphasSolutionsCostsSum[i]/this.alphasSolutionsNumber[i]);
+				}					
 				dSum += qs[i];
-				System.out.print(qs[i]+", ");
+//				System.out.print(qs[i]+", ");
 			}			
-			System.out.println();
+//			System.out.println();
 			for (int i = 0; i < alphas.length; i++) {
 				this.alphasProbabilities[i] = qs[i]/dSum;
 			}			
@@ -204,12 +207,12 @@ public abstract class ReactiveGRASP<E> {
 		
 		
 		
-		System.out.println("Trying to find "+prob);
-		System.out.println("Probabilities values:");
-		for (int i = 0; i < alphasProbabilities.length; i++) {
-			System.out.print(alphasProbabilities[i] + ",");
-		}
-		System.out.println();
+//		System.out.println("Trying to find "+prob);
+//		System.out.println("Probabilities values:");
+//		for (int i = 0; i < alphasProbabilities.length; i++) {
+//			System.out.print(alphasProbabilities[i] + ",");
+//		}
+//		System.out.println();
 		
 		
 		
@@ -243,9 +246,12 @@ public abstract class ReactiveGRASP<E> {
 		/* Main loop, which repeats until the stopping criteria is reached. */
 		while (!constructiveStopCriteria()) {
 
-			double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
-			incumbentCost = ObjFunction.evaluate(incumbentSol);
 			updateCL();
+			if (CL.size() == 0) {
+				break;
+			}
+			double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
+			incumbentCost = ObjFunction.evaluate(incumbentSol);			
 
 			/*
 			 * Explore all candidate elements to enter the solution, saving the
@@ -269,8 +275,8 @@ public abstract class ReactiveGRASP<E> {
 					RCL.add(c);
 				}
 			}
-			System.out.println("Incumbet cost is "+incumbentCost);
-			System.out.println("RCL itens between "+minCost+" and "+alpha * (maxCost - minCost));
+//			System.out.println("Incumbet cost is "+incumbentCost);
+//			System.out.println("RCL itens between "+minCost+" and "+alpha * (maxCost - minCost));
 			/* Choose a candidate randomly from the RCL */
 			int rndIndex = rng.nextInt(RCL.size());
 			E inCand = RCL.get(rndIndex);

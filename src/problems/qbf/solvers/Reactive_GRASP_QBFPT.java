@@ -217,7 +217,7 @@ public class Reactive_GRASP_QBFPT extends ReactiveGRASP<Integer> {
 		
 		
 		long startTime = System.currentTimeMillis();		
-		Reactive_GRASP_QBFPT grasp = new Reactive_GRASP_QBFPT(alphas, 100000, minNumberSolutionsPerAlpha, "instances/qbf020");
+		Reactive_GRASP_QBFPT grasp = new Reactive_GRASP_QBFPT(alphas, 50000, minNumberSolutionsPerAlpha, "instances/qbf020");
 		Solution<Integer> bestSol = grasp.solve();
 		
 		
