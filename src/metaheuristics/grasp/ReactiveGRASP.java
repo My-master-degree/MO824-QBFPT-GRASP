@@ -40,12 +40,18 @@ public abstract class ReactiveGRASP<E> {
 	/**
 	 * the GRASP greediness-randomness parameter
 	 */
-	protected Double[] alphas;
+	protected double[] alphas;
 	
-	protected List<Double>[] alphasAverageCost;
+	protected double[] alphasSolutionsCostsSum;
 	
-	protected Double[] alphasProbabilities;	
+	protected int[] alphasSolutionsNumber;
+	
+	protected double[] alphasProbabilities;	
 
+	protected int minNuberOfSolutionsPerAlpha;
+	
+	protected Boolean readyToBalanceAlphasProbabilities;
+	
 	/**
 	 * the best solution cost
 	 */
@@ -134,34 +140,90 @@ public abstract class ReactiveGRASP<E> {
 	 * @param iterations
 	 *            The number of iterations which the GRASP will be executed.
 	 */
-	public ReactiveGRASP(Evaluator<E> objFunction, Double[] alphas, Integer iterations) {
+	public ReactiveGRASP(Evaluator<E> objFunction, double[] alphas, Integer iterations, int minNuberOfSolutionsPerAlpha) {
 		this.ObjFunction = objFunction;
 		this.alphas = alphas;
-		this.alphasAverageCost = new ArrayList [alphas.length];
-		for (int i = 0; i < this.alphasAverageCost.length; i++) {
-			this.alphasAverageCost[i] = new ArrayList<Double> ();
+		this.alphasSolutionsCostsSum = new double[alphas.length];
+		this.alphasSolutionsNumber = new int[alphas.length];
+		this.alphasProbabilities = new double[alphas.length];
+		for (int i = 0; i < alphasProbabilities.length; i++) {
+			this.alphasProbabilities[i] = (double) 1/alphasProbabilities.length;
 		}
-		this.alphasProbabilities = new Double[alphas.length];
 		this.iterations = iterations;		
-//		this.alphasRepeated = 
+		this.minNuberOfSolutionsPerAlpha = minNuberOfSolutionsPerAlpha;
+		this.readyToBalanceAlphasProbabilities = false;
 	}
 	
-	protected void updateAlphaAverageCost(int i, double newCost) {
-		this.alphasAverageCost[i].add(newCost);
-	}
-	
-	protected Double getAlphaAverageCost(i) {
-		Double totalCost = 0;
-		
-	}
+//	protected Double getAlphaAverageCost(i) {
+//		Double totalCost = 0;
+//		
+//	}
 	
 	protected void updateAlphaProbability(int i) {
-		Double qs = 0d;
-		for (int j = 0; j < this.alphas.length; j++) {
-			qs += this.alphasAverageCost[i]
-		}
-		this.alphasProbabilities[i] = (this.incumbentCost/this.alphasAverageCost[i])/
+//		Double qs = 0d;
+//		for (int j = 0; j < this.alphas.length; j++) {
+//			qs += this.alphasAverageCost[i]
+//		}
+//		this.alphasProbabilities[i] = (this.incumbentCost/this.alphasAverageCost[i])/
 	}
+	
+	public void balanceAlphasProbabilities() {		
+//		check if each alpha has the minNuberOfSolutionsPerAlpha
+		boolean ready = true;
+		if (!this.readyToBalanceAlphasProbabilities) {								
+			for (int i = 0; i < this.alphasSolutionsNumber.length; i++) {
+				if (this.alphasSolutionsNumber[i] < this.minNuberOfSolutionsPerAlpha) {
+					ready = false;
+					break;
+				}
+			}
+		}
+		this.readyToBalanceAlphasProbabilities = ready;
+//		get value
+		if (this.readyToBalanceAlphasProbabilities) {
+			System.out.println("now balance!!!!");
+			double[] qs = new double[alphas.length];
+			double dSum = 0;
+//			calculate q	
+			if (this.incumbentCost == 0)
+				return;
+			for (int i = 0; i < alphas.length; i++) {
+				qs[i] = this.incumbentCost/(this.alphasSolutionsCostsSum[i]/this.alphasSolutionsNumber[i]);
+				dSum += qs[i];
+				System.out.print(qs[i]+", ");
+			}			
+			System.out.println();
+			for (int i = 0; i < alphas.length; i++) {
+				this.alphasProbabilities[i] = qs[i]/dSum;
+			}			
+		}
+	}
+	
+	public Integer getAlphaIndex(double prob) {
+		double count = 0d;
+		
+		
+		
+		System.out.println("Trying to find "+prob);
+		System.out.println("Probabilities values:");
+		for (int i = 0; i < alphasProbabilities.length; i++) {
+			System.out.print(alphasProbabilities[i] + ",");
+		}
+		System.out.println();
+		
+		
+		
+		
+		for (int i = 0; i < alphas.length; i++) {
+			count += alphasProbabilities[i];
+			if (prob <= count) {
+				return i;				
+			}			
+		}
+		return null;
+	}
+	
+	
 	
 	/**
 	 * The GRASP constructive heuristic, which is responsible for building a
@@ -175,8 +237,9 @@ public abstract class ReactiveGRASP<E> {
 		CL = makeCL();
 		RCL = makeRCL();
 		incumbentSol = createEmptySol();
-		incumbentCost = Double.POSITIVE_INFINITY;
-
+		incumbentCost = Double.POSITIVE_INFINITY;		
+		Integer alphaIndex = this.getAlphaIndex(this.rng.nextDouble());
+		Double alpha = this.alphas[alphaIndex];		
 		/* Main loop, which repeats until the stopping criteria is reached. */
 		while (!constructiveStopCriteria()) {
 
@@ -199,15 +262,15 @@ public abstract class ReactiveGRASP<E> {
 			/*
 			 * Among all candidates, insert into the RCL those with the highest
 			 * performance using parameter alpha as threshold.
-			 */
-			Double alpha = 0d; 
+			 */			
 			for (E c : CL) {
 				Double deltaCost = ObjFunction.evaluateInsertionCost(c, incumbentSol);
 				if (deltaCost <= minCost + alpha * (maxCost - minCost)) {
 					RCL.add(c);
 				}
 			}
-
+			System.out.println("Incumbet cost is "+incumbentCost);
+			System.out.println("RCL itens between "+minCost+" and "+alpha * (maxCost - minCost));
 			/* Choose a candidate randomly from the RCL */
 			int rndIndex = rng.nextInt(RCL.size());
 			E inCand = RCL.get(rndIndex);
@@ -215,9 +278,10 @@ public abstract class ReactiveGRASP<E> {
 			incumbentSol.add(inCand);
 			ObjFunction.evaluate(incumbentSol);
 			RCL.clear();
-
 		}
-
+		this.alphasSolutionsCostsSum[alphaIndex] += incumbentCost;
+		this.alphasSolutionsNumber[alphaIndex]++;
+		this.balanceAlphasProbabilities();
 		return incumbentSol;
 	}
 
