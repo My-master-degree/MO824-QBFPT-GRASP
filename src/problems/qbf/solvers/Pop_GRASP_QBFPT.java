@@ -3,21 +3,12 @@ package problems.qbf.solvers;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import metaheuristics.grasp.AbstractGRASP;
-import problems.qbf.QBF_Inverse;
+import metaheuristics.grasp.PopGRASP;
+import problems.qbf.QBFPT_Inverse;
 import solutions.Solution;
 
+public class Pop_GRASP_QBFPT extends PopGRASP<Integer> {
 
-
-/**
- * Metaheuristic GRASP (Greedy Randomized Adaptive Search Procedure) for
- * obtaining an optimal solution to a QBF (Quadractive Binary Function --
- * {@link #QuadracticBinaryFunction}). Since by default this GRASP considers
- * minimization problems, an inverse QBF function is adopted.
- * 
- * @author ccavellucci, fusberti
- */
-public class GRASP_QBF extends AbstractGRASP<Integer> {
 
 	/**
 	 * Constructor for the GRASP_QBF class. An inverse QBF objective function is
@@ -34,8 +25,8 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 	 * @throws IOException
 	 *             necessary for I/O operations.
 	 */
-	public GRASP_QBF(Double alpha, Integer iterations, String filename) throws IOException {
-		super(new QBF_Inverse(filename), alpha, iterations);
+	public Pop_GRASP_QBFPT(Double alpha, Integer iterations, String filename) throws IOException {
+		super(new QBFPT_Inverse(filename), alpha, iterations);
 	}
 
 	/*
@@ -107,7 +98,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 
 		Double minDeltaCost;
 		Integer bestCandIn = null, bestCandOut = null;
-
+//		best improvement
 		do {
 			minDeltaCost = Double.POSITIVE_INFINITY;
 			updateCL();
@@ -154,7 +145,66 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 				ObjFunction.evaluate(incumbentSol);
 			}
 		} while (minDeltaCost < -Double.MIN_VALUE);
-
+//		first improvement
+		// Evaluate insertions
+		do {
+			updateCL();
+			boolean used = false;
+			for (Integer candIn : CL) {
+				double deltaCost = ObjFunction.evaluateInsertionCost(candIn, incumbentSol);
+				if (deltaCost < incumbentSol.cost) {
+					incumbentSol.add(candIn);
+					CL.remove(candIn);
+					ObjFunction.evaluate(incumbentSol);
+					used = true;
+					break;
+				}
+			}		
+			if (!used)
+				break;
+		} while (true);
+		// Evaluate removals
+		do {
+			updateCL();
+			boolean used = false;			
+			for (Integer candOut : incumbentSol) {
+				double deltaCost = ObjFunction.evaluateRemovalCost(candOut, incumbentSol);
+				if (deltaCost < incumbentSol.cost) {
+					incumbentSol.remove(candOut);
+					CL.add(candOut);
+					ObjFunction.evaluate(incumbentSol);
+					used = true;
+				}
+			}
+			if (!used)
+				break;
+		} while (true);
+		// Evaluate exchanges
+		do {
+			updateCL();
+			boolean used = false;
+			for (Integer candIn : CL) {
+				boolean used1 = false;
+				for (Integer candOut : incumbentSol) {
+					double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, incumbentSol);
+					if (deltaCost < minDeltaCost) {
+						incumbentSol.remove(candOut);
+						CL.add(candOut);
+						incumbentSol.add(candIn);
+						CL.remove(candIn);
+						ObjFunction.evaluate(incumbentSol);
+						used = true;
+						used1 = true;
+						break;
+					}
+				}
+				if (!used1)
+					break;			
+			}
+			if (!used)
+				break;			
+		} while (true);
+		
 		return null;
 	}
 
@@ -165,7 +215,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 	public static void main(String[] args) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf080");
+		Pop_GRASP_QBF grasp = new Pop_GRASP_QBF(0.05, 1000, "instances/qbf080");
 		Solution<Integer> bestSol = grasp.solve();
 		System.out.println("maxVal = " + bestSol);
 		long endTime   = System.currentTimeMillis();
@@ -173,5 +223,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 		System.out.println("Time = "+(double)totalTime/(double)1000+" seg");
 
 	}
+
+
 
 }
