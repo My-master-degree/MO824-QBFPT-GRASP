@@ -199,16 +199,24 @@ public abstract class AbstractGRASP<E> {
 	 * @return The best feasible solution obtained throughout all iterations.
 	 */
 	public Solution<E> solve() {
-
 		bestSol = createEmptySol();
-		for (int i = 0; i < iterations; i++) {
+		long startTime = System.currentTimeMillis();
+		long maxDurationInMilliseconds = 30 * 60 * 1000;
+		boolean intime = true;
+		for (int i = 0; i < iterations && intime ; i++) {	
 			constructiveHeuristic();
 			localSearch();
 			if (bestSol.cost > incumbentSol.cost) {
 				bestSol = new Solution<E>(incumbentSol);
-				if (verbose)
+				if (verbose) {
 					System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+				}
 			}
+			
+			if(System.currentTimeMillis() > startTime + maxDurationInMilliseconds) {
+				intime = false;
+			}
+		
 		}
 
 		return bestSol;

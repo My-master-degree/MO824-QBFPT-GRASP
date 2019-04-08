@@ -156,7 +156,7 @@ public class Pop_GRASP_QBF extends PopGRASP<Integer> {
 	public static void main(String[] args) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		Pop_GRASP_QBF grasp = new Pop_GRASP_QBF(0.05, 1000, "instances/qbf400");
+		Pop_GRASP_QBF grasp = new Pop_GRASP_QBF(0.05, 1000, "instances/qbf020");
 		Solution<Integer> bestSol = grasp.solve();
 		System.out.println("maxVal = " + bestSol);
 		long endTime   = System.currentTimeMillis();

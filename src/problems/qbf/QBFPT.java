@@ -66,36 +66,41 @@ public class QBFPT implements Evaluator<Integer> {
 		for (int i = 0; i < size; i++) {
 			triples[i][0] = i;
 			triples[i][1] = g(i, 131, 1031, size);
-			triples[i][2] = h(i, 193, 1093, size);;
-			Arrays.sort(triples[i]);			
+			triples[i][2] = h(i, 193, 1093, size);
+			Arrays.sort(triples[i]);
+			System.out.println("Triplas ["+i+"]["   +triples[i][0]+ ", "+triples[i][1]+ ", "+triples[i][2]+"]");
+			
 		}
 	}
-
 	int l(int u, int pi1, int pi2, int size){
-		return 1 + (((pi1*u) + pi2)%(size-1));
+		
+		return (((pi1*u) + pi2)%(size));
 	}
 	
 	int g(int u, int pi1, int pi2, int size){
-		int lu = l(u, pi1, pi2, (size-1));
+		pi1 = 131;
+		pi2 = 1031;
+		int lu = l(u, pi1, pi2, (size));
 		if (lu != u) {
 			return lu; 
 		}
-		return 1 + (lu%(size-1));
+		return 1 + (lu%(size));
 	}
 	
 	int h(int u, int pi1, int pi2, int size){
-		int lu = l(u, pi1, pi2, (size-1)),
-			gu = g(u, pi1, pi2, (size-1));
+		pi1 = 193;
+		pi2 = 1093;
+		int lu = l(u, pi1, pi2, (size)),
+			gu = g(u, pi1, pi2, (size));
 		if (lu != u && lu != gu) {
-			return lu;
+			return lu ;
 		}
-		int temp = (1 + (lu%(size-1)));
+		int temp = (1 + (lu%(size)));
 		if (temp != u && temp != gu) {
 			return temp;
 		}
-		return 1 + ((lu + 1)%(size-1));
-	}
-	
+		return 1 + ((lu + 1)%(size));
+	}	
 	/**
 	 * Evaluates the value of a solution by transforming it into a vector. This
 	 * is required to perform the matrix multiplication which defines a QBF.

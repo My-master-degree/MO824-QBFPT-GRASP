@@ -1,0 +1,16 @@
+ Grasp
+ qbf020 maxVal = -151.0 Time = 1800.01 seg
+ qbf040 maxVal = -429.0 Time = 1800.024 seg
+ qbf060 maxVal = -572.0 Time = 1800.075 seg
+ qbf080 maxVal = -989.0 Time = 1800.148 seg
+ qbf100 maxVal = -1467.0 Time = 1800.392 seg
+ qbf200 maxVal = -5385.0 Time = 1803.175 seg
+ qbf400 maxVal = -14805.0 Time = 1828.599 seg
+ PopGrasp
+ qbf020 maxVal = -151.0 Time = 0.733 seg
+ qbf040 maxVal = -429.0 Time = 2.772 seg
+ qbf060 maxVal = -576.0 Time = 5.816 seg
+ qbf080 maxVal = -1000.0 Time = 13.028 seg
+ qbf100 maxVal = -1468.0 Time = 30.076 seg
+ qbf200 maxVal = -5385.0 Time = 399.893 seg
+ qbf400 maxVal = -14812.0 Time = 1801.593 seg

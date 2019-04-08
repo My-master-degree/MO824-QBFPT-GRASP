@@ -107,7 +107,10 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 
 		Double minDeltaCost;
 		Integer bestCandIn = null, bestCandOut = null;
+		long startTime = System.currentTimeMillis();
+		long maxDurationInMilliseconds = 1 * 60 * 1000;
 
+		while (System.currentTimeMillis() < startTime + maxDurationInMilliseconds) {
 		do {
 			minDeltaCost = Double.POSITIVE_INFINITY;
 			updateCL();
@@ -154,7 +157,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 				ObjFunction.evaluate(incumbentSol);
 			}
 		} while (minDeltaCost < -Double.MIN_VALUE);
-
+		}
 		return null;
 	}
 
@@ -165,7 +168,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
 	public static void main(String[] args) throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf080");
+		GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf040");
 		Solution<Integer> bestSol = grasp.solve();
 		System.out.println("maxVal = " + bestSol);
 		long endTime   = System.currentTimeMillis();

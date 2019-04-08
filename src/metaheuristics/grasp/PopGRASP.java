@@ -274,21 +274,34 @@ public abstract class PopGRASP<E> {
 	 * @return The best feasible solution obtained throughout all iterations.
 	 */
 	public Solution<E> solve() {
-
 		bestSol = createEmptySol();
-		for (int i = 0; i < iterations; i++) {
-			constructiveHeuristic();
-			System.out.println("Chamou local search com a solução: "+incumbentSol);
-			localSearch();
-			if (bestSol.cost > incumbentSol.cost) {
-				bestSol = new Solution<E>(incumbentSol);
-				if (verbose)
+		long startTime = System.currentTimeMillis();
+		long maxDurationInMilliseconds = 30 * 60 * 1000;
+		boolean intime = true;
+		for (int i = 0; i < iterations && intime ; i++) {
+		
+
+			
+			
+				constructiveHeuristic();
+				localSearch();
+				if (bestSol.cost > incumbentSol.cost) {
+					bestSol = new Solution<E>(incumbentSol);
+					//System.out.println("BestSol = "+bestSol);
 					System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
-			}
+					if (verbose) {
+						System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+						
+					}
+				}
+				
+				if(System.currentTimeMillis() > startTime + maxDurationInMilliseconds) {
+					intime = false;
+				}
 			
 		}
 
-		return bestSol;
+		return bestSol;	
 	}
 
 	/**
