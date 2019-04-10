@@ -68,7 +68,7 @@ public class QBFPT implements Evaluator<Integer> {
 			triples[i][1] = g(i, 131, 1031, size);
 			triples[i][2] = h(i, 193, 1093, size);
 			Arrays.sort(triples[i]);
-			System.out.println("Triplas ["+i+"]["   +triples[i][0]+ ", "+triples[i][1]+ ", "+triples[i][2]+"]");
+			System.out.println("trilpas["+i+"] = ["+triples[i][0]+", "+triples[i][1]+", " +triples[i][2]+"] ");
 			
 		}
 	}

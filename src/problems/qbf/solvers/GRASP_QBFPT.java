@@ -124,7 +124,6 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 			if (candidateIn)
 				super.CL.add(item);
 		}
-//		System.out.println(super.CL);
 		
 		
 	}
@@ -201,66 +200,6 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 				ObjFunction.evaluate(incumbentSol);
 			}
 		} while (minDeltaCost < -Double.MIN_VALUE);
-//		first improvement
-		// Evaluate insertions
-		do {
-			updateCL();
-			boolean used = false;
-			for (Integer candIn : CL) {
-				double deltaCost = ObjFunction.evaluateInsertionCost(candIn, incumbentSol);
-				if (deltaCost < incumbentSol.cost) {
-					incumbentSol.add(candIn);
-					CL.remove(candIn);
-					ObjFunction.evaluate(incumbentSol);
-					used = true;
-					break;
-				}
-			}		
-			if (!used)
-				break;
-		} while (true);
-		// Evaluate removals
-		do {
-			updateCL();
-			boolean used = false;			
-			for (Integer candOut : incumbentSol) {
-				double deltaCost = ObjFunction.evaluateRemovalCost(candOut, incumbentSol);
-				if (deltaCost < incumbentSol.cost) {
-					incumbentSol.remove(candOut);
-					CL.add(candOut);
-					ObjFunction.evaluate(incumbentSol);
-					used = true;
-				}
-			}
-			if (!used)
-				break;
-		} while (true);
-		// Evaluate exchanges
-		do {
-			updateCL();
-			boolean used = false;
-			for (Integer candIn : CL) {
-				boolean used1 = false;
-				for (Integer candOut : incumbentSol) {
-					double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, incumbentSol);
-					if (deltaCost < minDeltaCost) {
-						incumbentSol.remove(candOut);
-						CL.add(candOut);
-						incumbentSol.add(candIn);
-						CL.remove(candIn);
-						ObjFunction.evaluate(incumbentSol);
-						used = true;
-						used1 = true;
-						break;
-					}
-				}
-				if (!used1)
-					break;			
-			}
-			if (!used)
-				break;			
-		} while (true);
-		
 		return null;
 	}
 
@@ -270,12 +209,11 @@ public class GRASP_QBFPT extends AbstractGRASP<Integer> {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		String[] intancesWords = new String[]{"020", "040", "060", "080", "100", "200", "400"};
+		//String[] intancesWords = new String[]{"020", "040", "060", "080", "100", "200", "400"};
 		//for (int i = 0; i < intancesWords.length; i++) {
 			long startTime = System.currentTimeMillis();
-			GRASP_QBFPT grasp = new GRASP_QBFPT(0.05, 1000, "instances/qbf020");
-			Solution<Integer> bestSol = grasp.solve();
-		
+			GRASP_QBFPT grasp = new GRASP_QBFPT(Double.parseDouble(args[0]), 1000, "instances/"+args[1]);
+			Solution<Integer> bestSol = grasp.solve();		
 			System.out.println("maxVal = " + bestSol);
 			long endTime   = System.currentTimeMillis();
 			long totalTime = endTime - startTime;

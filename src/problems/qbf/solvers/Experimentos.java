@@ -12,38 +12,26 @@ public class Experimentos {
 	
 	public static void main(String[] args) throws IOException {
 		
-		new File("resultado.txt").createNewFile();
-		File resultados  = new File("resultado.txt");
+		String arquivo = "resultado-reactive-QBF.txt" ;
+		new File(arquivo).createNewFile();
+		File resultados  = new File(arquivo);
 		FileOutputStream fos;
 		fos = new FileOutputStream(resultados);	
 		String[] intancesWords = new String[]{"020", "040", "060", "080", "100", "200", "400"};
 		String r = "";
-		
+		int minNumberSolutionsPerAlpha = 5;
+		double[] alphas = new double[10];
+		for (int j = 0; j < alphas.length; j++) {
+			alphas[j] = ((double) 1/alphas.length)*(j + 1);
+		}
 		//GRASP-QBF
 		for (int i = 0; i < intancesWords.length; i++) {
 			
-			long startTime = System.currentTimeMillis();
-			GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf"+intancesWords[i]);
+			long startTime = System.currentTimeMillis();		
+			Reactive_GRASP_QBFPT grasp = new Reactive_GRASP_QBFPT(alphas, 50000, minNumberSolutionsPerAlpha, "instances/qbf"+intancesWords[i]);
 			Solution<Integer> bestSol = grasp.solve();
-			r += " qbf"+intancesWords[i] ;
-			r += " maxVal = "+bestSol.cost.toString();
 			
-			System.out.println("R: "+r);
-			System.out.println("maxVal = " + bestSol);
-			long endTime   = System.currentTimeMillis();
-			long totalTime = endTime - startTime;
-			r+= " Time = "+(double)totalTime/(double)1000+" seg";
-			System.out.println("Time = "+(double)totalTime/(double)1000+" seg");				
 			
-			r+= "\n";
-	
-		}
-		
-		for (int i = 0; i < intancesWords.length; i++) {
-			
-			long startTime = System.currentTimeMillis();
-			Pop_GRASP_QBF grasp = new Pop_GRASP_QBF(0.05, 1000, "instances/qbf"+intancesWords[i]);
-			Solution<Integer> bestSol = grasp.solve();
 			r += " qbf"+intancesWords[i] ;
 			r += " maxVal = "+bestSol.cost.toString();
 			

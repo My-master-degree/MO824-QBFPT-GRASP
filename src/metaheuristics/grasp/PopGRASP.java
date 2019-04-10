@@ -143,7 +143,7 @@ public abstract class PopGRASP<E> {
 	 */
 	public Solution<E> constructiveHeuristic() {
 
-		System.out.println("Iniciate Construction");
+		//System.out.println("Iniciate Construction");
 		CL = makeCL();
 		RCL = makeRCL();
 		incumbentSol = createEmptySol();
@@ -183,40 +183,36 @@ public abstract class PopGRASP<E> {
 
 			//Aqui
 			/* Choose a candidate randomly from the RCL */
-			int rndIndex = rng.nextInt(RCL.size());
-			System.out.println("RCL: "+RCL.toString());
-			E inCand = RCL.get(rndIndex);
-			CL.remove(inCand);
-			incumbentSol.add(inCand);
-			ObjFunction.evaluate(incumbentSol);
-			System.out.println("Solution: "+incumbentSol);
+			if(RCL.size() > 0) {
+				int rndIndex = rng.nextInt(RCL.size());
+				E inCand = RCL.get(rndIndex);
+				CL.remove(inCand);
+				incumbentSol.add(inCand);
+			}
+			//System.out.println("Solution: "+incumbentSol);
 			if(count > 4) {
-				System.out.println("Pré: "+incumbentSol);
 				consc_localsearch();
 				count = 0;
-				System.out.println("pos: "+incumbentSol);
 			}
 			
 			
 			
 			RCL.clear();
-			System.out.println("RCL Clear");
+			
 
 		}
-		System.out.println("Incumbent Solution: "+incumbentSol);
 		return incumbentSol;
 	}
 
 	private Solution<E> consc_localsearch() {
 		Double minDeltaCost;
 		E bestCandIn = null, bestCandOut = null;
-		System.out.println("iniciate consc_localsearch\n________________________________________________________________________________");
 		do {
 			minDeltaCost = Double.POSITIVE_INFINITY;
 			updateCL();
 				
 			// Evaluate insertions
-			/*
+			
 			for (E candIn : CL) {
 				double deltaCost = ObjFunction.evaluateInsertionCost(candIn, incumbentSol);
 				if (deltaCost < minDeltaCost) {
@@ -224,7 +220,7 @@ public abstract class PopGRASP<E> {
 					bestCandIn = candIn;
 					bestCandOut = null;
 				}
-			}*/
+			}
 			// Evaluate removals
 			for (E candOut : incumbentSol) {
 				double deltaCost = ObjFunction.evaluateRemovalCost(candOut, incumbentSol);
@@ -260,7 +256,6 @@ public abstract class PopGRASP<E> {
 			}
 		} while (minDeltaCost < -Double.MIN_VALUE);
 		
-		System.out.println("end concs_localsearch\n________________________________________________________________________________");
 		return null;
 	}
 	
@@ -288,7 +283,7 @@ public abstract class PopGRASP<E> {
 				if (bestSol.cost > incumbentSol.cost) {
 					bestSol = new Solution<E>(incumbentSol);
 					//System.out.println("BestSol = "+bestSol);
-					System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+					//System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
 					if (verbose) {
 						System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
 						

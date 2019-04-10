@@ -179,10 +179,12 @@ public abstract class AbstractGRASP<E> {
 			}
 
 			/* Choose a candidate randomly from the RCL */
-			int rndIndex = rng.nextInt(RCL.size());
-			E inCand = RCL.get(rndIndex);
-			CL.remove(inCand);
-			incumbentSol.add(inCand);
+			if(RCL.size() > 0) {
+				int rndIndex = rng.nextInt(RCL.size());
+				E inCand = RCL.get(rndIndex);
+				CL.remove(inCand);
+				incumbentSol.add(inCand);
+			}
 			ObjFunction.evaluate(incumbentSol);
 			RCL.clear();
 

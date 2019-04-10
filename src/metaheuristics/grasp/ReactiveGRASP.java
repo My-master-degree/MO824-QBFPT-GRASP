@@ -278,10 +278,12 @@ public abstract class ReactiveGRASP<E> {
 //			System.out.println("Incumbet cost is "+incumbentCost);
 //			System.out.println("RCL itens between "+minCost+" and "+alpha * (maxCost - minCost));
 			/* Choose a candidate randomly from the RCL */
-			int rndIndex = rng.nextInt(RCL.size());
-			E inCand = RCL.get(rndIndex);
-			CL.remove(inCand);
-			incumbentSol.add(inCand);
+			if(RCL.size() > 0) {
+				int rndIndex = rng.nextInt(RCL.size());
+				E inCand = RCL.get(rndIndex);
+				CL.remove(inCand);
+				incumbentSol.add(inCand);
+			}
 			ObjFunction.evaluate(incumbentSol);
 			RCL.clear();
 		}
@@ -305,10 +307,6 @@ public abstract class ReactiveGRASP<E> {
 		long maxDurationInMilliseconds = 30 * 60 * 1000;
 		boolean intime = true;
 		for (int i = 0; i < iterations && intime ; i++) {
-		
-
-			
-			
 				constructiveHeuristic();
 				localSearch();
 				if (bestSol.cost > incumbentSol.cost) {
